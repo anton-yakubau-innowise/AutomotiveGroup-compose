@@ -13,3 +13,21 @@ services:
 
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+
+
+  user_service_app:
+    build:
+      context: ../UserService
+      dockerfile: Dockerfile
+      target: build    
+
+    volumes:
+      - ../UserService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - user_service_db

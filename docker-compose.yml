@@ -1,4 +1,7 @@
 services:
+
+  # --- VEHICLE SERVICE ---
+
   vehicle_service_db:
     image: postgres:17
     container_name: vehicle_service_db
@@ -45,6 +48,51 @@ services:
     depends_on:
       - vehicle_service_db
 
+
+
+  # --- USER SERVICE ---
+
+  user_service_db:
+    image: mongo:latest
+    container_name: user_service_db
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${USER_DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${USER_DB_PASSWORD}
+    ports:
+      - "${USER_DB_HOST_PORT}:27017"
+    volumes:
+      - user_mongo_data:/data/db
+
+  user_service_app:
+    image: 170anton/user_service_app:latest
+    container_name: user_service_app
+    restart: unless-stopped
+    ports:
+      - "${USER_APP_HOST_PORT}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      MongoDbSettings__ConnectionString: "mongodb://${USER_DB_USER}:${USER_DB_PASSWORD}@user_service_db:27017"
+      MongoDbSettings__DatabaseName: ${USER_APP_DB_NAME}
+    depends_on:
+      - user_service_db
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: unless-stopped
+    ports:
+      - "${MONGO_EXPRESS_HOST_PORT}:8081"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${USER_DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${USER_DB_PASSWORD}
+      ME_CONFIG_MONGODB_SERVER: user_service_db
+    depends_on:
+      - user_service_db
+
+
+
 volumes:
   vehicle_postgres_data:
   pgadmin_app_data:
+  user_mongo_data:
