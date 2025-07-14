@@ -91,8 +91,41 @@ services:
       - user_service_db
 
 
+  # --- SHOWROOM SERVICE ---
+
+  showroom_service_db:
+    image: postgres:17
+    container_name: showroom_service_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SHOWROOM_DB_USER}
+      POSTGRES_PASSWORD: ${SHOWROOM_DB_PASSWORD}
+      POSTGRES_DB: ${SHOWROOM_DB_NAME}
+    ports:
+      - "${SHOWROOM_DB_HOST_PORT}:5432"
+    volumes:
+      - showroom_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SHOWROOM_DB_USER} -d ${SHOWROOM_DB_NAME}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  showroom_service_app:
+    image: 170anton/showroom_service_app:latest
+    container_name: showroom_service_app
+    restart: unless-stopped
+    ports:
+      - "${SHOWROOM_APP_HOST_PORT}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=showroom_service_db;Port=5432;Database=${SHOWROOM_APP_DB_NAME};Username=${SHOWROOM_APP_DB_USER};Password=${SHOWROOM_APP_DB_PASSWORD}"
+    depends_on:
+      showroom_service_db:
+        condition: service_healthy
 
 volumes:
   vehicle_postgres_data:
   pgadmin_app_data:
   user_mongo_data:
+  showroom_postgres_data:

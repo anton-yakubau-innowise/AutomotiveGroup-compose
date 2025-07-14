@@ -31,3 +31,19 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
     depends_on:
       - user_service_db
+
+
+
+  showroom_service_app:
+    build:
+      context: ../ShowroomService
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ../ShowroomService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    depends_on:
+      - showroom_service_db
