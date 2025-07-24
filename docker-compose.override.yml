@@ -13,6 +13,7 @@ services:
 
     environment:
       ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
 
 
   user_service_app:
@@ -29,8 +30,7 @@ services:
 
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-    depends_on:
-      - user_service_db
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
 
 
 
@@ -45,5 +45,19 @@ services:
     command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-    depends_on:
-      - showroom_service_db
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+
+
+  
+  notification_service_app:
+    build:
+      context: ../NotificationService
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ../NotificationService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
