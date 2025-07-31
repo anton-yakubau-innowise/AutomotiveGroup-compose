@@ -158,9 +158,44 @@ services:
       notification_service_db:
         condition: service_healthy
 
+
+  # --- SALES SERVICE ---
+  sales_service_db:
+    image: postgres:17
+    container_name: sales_service_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${SALES_DB_USER}
+      POSTGRES_PASSWORD: ${SALES_DB_PASSWORD}
+      POSTGRES_DB: ${SALES_DB_NAME}
+    ports:
+      - "${SALES_DB_HOST_PORT}:5432"
+    volumes:
+      - sales_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SALES_DB_USER} -d ${SALES_DB_NAME}"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
+  sales_service_app:
+    image: 170anton/sales_service_app:latest
+    container_name: sales_service_app
+    restart: unless-stopped
+    ports:
+      - "${SALES_APP_HOST_PORT}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=sales_service_db;Port=5432;Database=${SALES_APP_DB_NAME};Username=${SALES_APP_DB_USER};Password=${SALES_APP_DB_PASSWORD}"
+    depends_on:
+      sales_service_db:
+        condition: service_healthy
+
+
 volumes:
   vehicle_postgres_data:
   pgadmin_app_data:
   user_mongo_data:
   showroom_postgres_data:
   notification_postgres_data:
+  sales_postgres_data:
