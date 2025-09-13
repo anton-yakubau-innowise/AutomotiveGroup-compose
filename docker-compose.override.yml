@@ -1,0 +1,78 @@
+services:
+  vehicle_service_app:
+    build:
+      context: ../VehicleService  
+      dockerfile: Dockerfile
+      target: build    
+    
+    volumes:
+      - ../VehicleService:/app 
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+
+
+  user_service_app:
+    build:
+      context: ../UserService
+      dockerfile: Dockerfile
+      target: build    
+
+    volumes:
+      - ../UserService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+
+
+
+  showroom_service_app:
+    build:
+      context: ../ShowroomService
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ../ShowroomService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+
+
+  
+  notification_service_app:
+    build:
+      context: ../NotificationService
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ../NotificationService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+
+
+
+  sales_service_app:
+    build:
+      context: ../SalesService
+      dockerfile: Dockerfile
+      target: build
+    volumes:
+      - ../SalesService:/app
+      - ~/.nuget/packages:/root/.nuget/packages:ro
+    command: ["dotnet", "watch", "run", "--urls", "http://+:8080"]
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
