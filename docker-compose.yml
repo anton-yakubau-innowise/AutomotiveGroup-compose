@@ -26,6 +26,7 @@ services:
     restart: unless-stopped
     ports:
       - "${VEHICLE_APP_HOST_PORT}:8080"
+      - "${VEHICLE_GRPC_HOST_PORT}:8081"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=vehicle_service_db;Port=5432;Database=${VEHICLE_APP_DB_NAME};Username=${VEHICLE_APP_DB_USER};Password=${VEHICLE_APP_DB_PASSWORD}"
@@ -54,6 +55,7 @@ services:
     restart: unless-stopped
     ports:
       - "${USER_APP_HOST_PORT}:8080"
+      - "${USER_GRPC_HOST_PORT}:8081"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       MongoDbSettings__ConnectionString: "mongodb://${USER_DB_USER}:${USER_DB_PASSWORD}@user_service_db:27017"
